@@ -13,12 +13,15 @@
         .calendar-container {
             max-width: 1200px;
             margin: 0 auto;
+            padding: 0 15px;
         }
         .calendar-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
         }
         .calendar-grid {
             display: grid;
@@ -32,6 +35,7 @@
             padding: 10px;
             cursor: pointer;
             user-select: none;
+            overflow: hidden;
         }
         .day-header {
             background-color: #f8f9fa;
@@ -51,16 +55,23 @@
             margin-bottom: 2px;
             font-size: 12px;
             cursor: pointer;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            text-align: center; /* Center the event text */
         }
         .nav-button {
             background-color: #fff;
             border: 1px solid #ddd;
             padding: 8px 16px;
             cursor: pointer;
+            width: auto;
+            min-width: 100px;
         }
         .current-month {
             font-size: 20px;
             font-weight: bold;
+            text-align: center;
         }
         .event-form {
             position: fixed;
@@ -72,35 +83,27 @@
             border-radius: 8px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             display: none;
+            width: 90%;
+            max-width: 300px;
+            z-index: 1000;
         }
-        .journal-form {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            display: none;
-            width: 80%;
-            max-width: 600px;
-        }
-        .journal-textarea {
+        .event-form input {
             width: 100%;
-            height: 150px;
+            padding: 8px;
             margin: 10px 0;
-            padding: 10px;
-            resize: vertical;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
         }
-        .other-month {
-            background-color: #f5f5f5;
+        .event-form h3 {
+            margin-top: 0;
+            margin-bottom: 15px;
         }
         .color-picker {
-            margin: 10px 0;
             display: grid;
-            grid-template-columns: repeat(5, 1fr);
+            grid-template-columns: repeat(auto-fit, minmax(25px, 1fr));
             gap: 5px;
+            margin: 10px 0;
         }
         .color-option {
             width: 25px;
@@ -114,8 +117,70 @@
         }
         .time-inputs {
             display: flex;
+            flex-wrap: wrap;
             gap: 10px;
             margin: 10px 0;
+        }
+        .time-inputs div {
+            flex: 1;
+            min-width: 120px;
+        }
+        .time-inputs label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+        .event-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        .event-actions button {
+            flex: 1;
+            padding: 8px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            min-width: 80px;
+        }
+        .event-actions button:first-child {
+            background: #4285f4;
+            color: white;
+        }
+        .event-actions button:last-child {
+            background: #ddd;
+        }
+        .delete-event-btn {
+            background: #dc3545 !important;
+            color: white;
+        }
+        .journal-form {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: none;
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            z-index: 1000;
+        }
+        .journal-textarea {
+            width: 100%;
+            height: 150px;
+            margin: 10px 0;
+            padding: 10px;
+            resize: vertical;
+            box-sizing: border-box;
+        }
+        .other-month {
+            background-color: #f5f5f5;
         }
         .task-list {
             list-style: none;
@@ -123,12 +188,20 @@
             margin: 10px 0;
             max-height: 200px;
             overflow-y: auto;
+            position: relative;
         }
         .task-item {
             display: flex;
             align-items: center;
             padding: 5px;
             border-bottom: 1px solid #eee;
+            flex-wrap: wrap;
+            gap: 5px;
+            transition: opacity 5s ease;
+            opacity: 1;
+        }
+        .task-item.fade-out {
+            opacity: 0;
         }
         .task-item input[type="checkbox"] {
             margin-right: 10px;
@@ -139,6 +212,7 @@
             margin: 10px 0;
             border: 1px solid #ddd;
             border-radius: 4px;
+            box-sizing: border-box;
         }
         .add-task-btn {
             background: #4285f4;
@@ -148,6 +222,7 @@
             border-radius: 4px;
             cursor: pointer;
             margin-bottom: 10px;
+            width: 100%;
         }
         .completed-task {
             text-decoration: line-through;
@@ -157,11 +232,119 @@
             margin-top: 20px;
             border-top: 1px solid #ddd;
             padding-top: 20px;
+            position: relative;
         }
-        .event-actions {
+        .task-toggle {
             display: flex;
+            flex-wrap: wrap;
             gap: 10px;
+            margin-bottom: 10px;
+        }
+        .task-toggle button {
+            flex: 1;
+            padding: 8px 16px;
+            border: 1px solid #ddd;
+            background: #fff;
+            cursor: pointer;
+            border-radius: 4px;
+            min-width: 120px;
+        }
+        .task-toggle button.active {
+            background: #4285f4;
+            color: white;
+            border-color: #4285f4;
+        }
+        .daily-events {
+            margin-bottom: 20px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 4px;
+        }
+        .daily-events h4 {
+            margin-top: 0;
+            margin-bottom: 10px;
+        }
+        .add-event-btn {
+            background: #4285f4;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
             margin-top: 10px;
+            width: 100%;
+        }
+
+        /* Responsive Design Media Queries */
+        @media screen and (max-width: 768px) {
+            .calendar-grid {
+                font-size: 14px;
+            }
+            
+            .calendar-cell {
+                min-height: 80px;
+                padding: 5px;
+            }
+
+            .event {
+                font-size: 10px;
+                padding: 1px 3px;
+            }
+
+            .current-month {
+                font-size: 16px;
+                width: 100%;
+                text-align: center;
+                order: -1;
+            }
+
+            .nav-button {
+                padding: 6px 12px;
+                min-width: auto;
+                flex: 1;
+            }
+        }
+
+        @media screen and (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+
+            .calendar-cell {
+                min-height: 60px;
+            }
+
+            .day-header {
+                padding: 5px;
+                font-size: 12px;
+            }
+
+            .date-number {
+                font-size: 12px;
+            }
+
+            .event {
+                margin-bottom: 1px;
+            }
+
+            .event-form, .journal-form {
+                width: 95%;
+                padding: 15px;
+            }
+
+            .time-inputs div {
+                flex: 100%;
+            }
+
+            .task-toggle button {
+                flex: 100%;
+            }
+
+            .journal-form button {
+                margin-bottom: 20px;
+                padding: 12px;
+                font-size: 16px;
+            }
         }
     </style>
 </head>
@@ -188,34 +371,47 @@
 
     <div class="event-form" id="eventForm">
         <h3>Add Event</h3>
-        <input type="date" id="eventDate" required>
+        <input type="text" id="eventDescription" placeholder="Event Name" required>
         <div class="time-inputs">
             <div>
                 <label for="eventStartTime">Start Time:</label>
-                <input type="time" id="eventStartTime" step="300" required>
+                <input type="time" id="eventStartTime" required>
             </div>
             <div>
                 <label for="eventEndTime">End Time:</label>
-                <input type="time" id="eventEndTime" step="300" required>
+                <input type="time" id="eventEndTime" required>
             </div>
         </div>
-        <input type="text" id="eventDescription" placeholder="Event Description" required>
+        <h4>Select Color:</h4>
         <div class="color-picker" id="colorPicker"></div>
+        <input type="hidden" id="eventDate">
         <input type="hidden" id="eventId">
         <div class="event-actions">
-            <button onclick="saveEvent()">Save</button>
+            <button onclick="saveEvent()">Save Event</button>
             <button onclick="closeEventForm()">Cancel</button>
-            <button onclick="deleteEvent()" id="deleteEventBtn" style="display: none; background: #dc3545; color: white; border: none; padding: 8px 16px; border-radius: 4px;">Delete</button>
+            <button onclick="deleteEvent()" class="delete-event-btn">Delete</button>
         </div>
     </div>
 
     <div class="journal-form" id="journalForm">
-        <h3>Journal Entry</h3>
+        <h3>Daily Overview</h3>
         <div id="journalDate" style="margin-bottom: 10px;"></div>
+        
+        <div class="daily-events">
+            <h4>Events</h4>
+            <div id="dailyEventsList"></div>
+            <button class="add-event-btn" onclick="addEvent(document.getElementById('journalForm').dataset.date)">Add Event</button>
+        </div>
+
+        <h4>Journal Entry</h4>
         <textarea id="journalText" class="journal-textarea" placeholder="Write your thoughts for this day..."></textarea>
         
         <div class="task-container">
             <h3>Tasks</h3>
+            <div class="task-toggle">
+                <button onclick="switchTaskList('personal')" id="personalTasksBtn" class="active">Personal Tasks</button>
+                <button onclick="switchTaskList('work')" id="workTasksBtn">Work Tasks</button>
+            </div>
             <input type="text" id="taskInput" class="task-input" placeholder="Add a new task">
             <button class="add-task-btn" onclick="addTask()">Add Task</button>
             <ul class="task-list" id="taskList">
@@ -228,48 +424,93 @@
     </div>
 
     <script>
-        let currentDate = new Date(); // Changed to use current date
+        let currentDate = new Date();
         let events = [];
         let selectedColor = '#4285f4';
         let journalEntries = {};
-        let pressTimer;
-        let tasks = [];
+        let personalTasks = [];
+        let workTasks = [];
+        let currentTaskList = 'personal';
 
         const colors = [
-            '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEEAD',
-            '#D4A5A5', '#9B59B6', '#3498DB', '#E74C3C', '#2ECC71',
-            '#F1C40F', '#1ABC9C', '#D35400', '#8E44AD', '#2980B9',
-            '#27AE60', '#F39C12', '#16A085', '#C0392B', '#7F8C8D'
+            '#FF0000', '#FF4500', '#FF6B6B', '#FFA500', '#FFD700', '#F1C40F', '#FFEEAD',
+            '#90EE90', '#2ECC71', '#27AE60', '#16A085', '#96CEB4', '#4ECDC4',
+            '#45B7D1', '#3498DB', '#2980B9', '#0000FF', '#8E44AD', '#9B59B6', '#D4A5A5'
         ];
+
+        function formatTime(timeStr) {
+            const [hours, minutes] = timeStr.split(':');
+            let period = 'AM';
+            let hour = parseInt(hours);
+            
+            if (hour >= 12) {
+                period = 'PM';
+                if (hour > 12) {
+                    hour -= 12;
+                }
+            }
+            if (hour === 0) {
+                hour = 12;
+            }
+            
+            return `${hour}:${minutes} ${period}`;
+        }
+
+        function switchTaskList(type) {
+            currentTaskList = type;
+            document.getElementById('personalTasksBtn').classList.toggle('active', type === 'personal');
+            document.getElementById('workTasksBtn').classList.toggle('active', type === 'work');
+            renderTasks();
+        }
 
         function addTask() {
             const taskInput = document.getElementById('taskInput');
             const taskText = taskInput.value.trim();
             
             if (taskText) {
-                tasks.push({
+                const newTask = {
                     text: taskText,
                     completed: false,
                     id: Date.now()
-                });
-                localStorage.setItem('tasks', JSON.stringify(tasks));
+                };
+
+                if (currentTaskList === 'personal') {
+                    personalTasks.push(newTask);
+                    localStorage.setItem('personalTasks', JSON.stringify(personalTasks));
+                } else {
+                    workTasks.push(newTask);
+                    localStorage.setItem('workTasks', JSON.stringify(workTasks));
+                }
+                
                 renderTasks();
                 taskInput.value = '';
             }
         }
 
         function toggleTask(taskId) {
+            const tasks = currentTaskList === 'personal' ? personalTasks : workTasks;
             const task = tasks.find(t => t.id === taskId);
             if (task) {
                 task.completed = !task.completed;
-                localStorage.setItem('tasks', JSON.stringify(tasks));
-                renderTasks();
+                if (task.completed) {
+                    const taskElement = document.querySelector(`[data-task-id="${taskId}"]`);
+                    taskElement.classList.add('fade-out');
+                    setTimeout(() => {
+                        deleteTask(taskId);
+                    }, 5000);
+                }
+                localStorage.setItem(currentTaskList + 'Tasks', JSON.stringify(tasks));
             }
         }
 
         function deleteTask(taskId) {
-            tasks = tasks.filter(t => t.id !== taskId);
-            localStorage.setItem('tasks', JSON.stringify(tasks));
+            if (currentTaskList === 'personal') {
+                personalTasks = personalTasks.filter(t => t.id !== taskId);
+                localStorage.setItem('personalTasks', JSON.stringify(personalTasks));
+            } else {
+                workTasks = workTasks.filter(t => t.id !== taskId);
+                localStorage.setItem('workTasks', JSON.stringify(workTasks));
+            }
             renderTasks();
         }
 
@@ -277,9 +518,12 @@
             const taskList = document.getElementById('taskList');
             taskList.innerHTML = '';
             
+            const tasks = currentTaskList === 'personal' ? personalTasks : workTasks;
+            
             tasks.forEach(task => {
                 const li = document.createElement('li');
                 li.className = 'task-item';
+                li.setAttribute('data-task-id', task.id);
                 
                 const checkbox = document.createElement('input');
                 checkbox.type = 'checkbox';
@@ -319,6 +563,13 @@
                 };
                 colorPicker.appendChild(colorOption);
             });
+
+            // Select first color by default
+            const firstColor = colorPicker.firstChild;
+            if (firstColor) {
+                firstColor.classList.add('selected');
+                selectedColor = colors[0];
+            }
         }
 
         function previousMonth() {
@@ -335,12 +586,17 @@
             const eventForm = document.getElementById('eventForm');
             document.getElementById('eventDate').value = date;
             document.getElementById('eventId').value = '';
-            document.getElementById('deleteEventBtn').style.display = 'none';
+            document.getElementById('eventDescription').value = '';
             document.getElementById('eventStartTime').value = '';
             document.getElementById('eventEndTime').value = '';
-            document.getElementById('eventDescription').value = '';
             eventForm.style.display = 'block';
             initializeColorPicker();
+            
+            // Hide delete button for new events
+            document.querySelector('.delete-event-btn').style.display = 'none';
+            
+            // Close journal form when opening event form
+            document.getElementById('journalForm').style.display = 'none';
         }
 
         function editEvent(event, index) {
@@ -350,26 +606,34 @@
             document.getElementById('eventEndTime').value = event.endTime;
             document.getElementById('eventDescription').value = event.description;
             document.getElementById('eventId').value = index;
-            document.getElementById('deleteEventBtn').style.display = 'block';
             selectedColor = event.color;
             eventForm.style.display = 'block';
             initializeColorPicker();
             
-            // Select the correct color in the picker
+            // Show delete button for existing events
+            document.querySelector('.delete-event-btn').style.display = 'block';
+            
             const colorOptions = document.querySelectorAll('.color-option');
             colorOptions.forEach(opt => {
                 if (opt.style.backgroundColor === event.color) {
                     opt.classList.add('selected');
                 }
             });
+            
+            // Close journal form when opening event form
+            document.getElementById('journalForm').style.display = 'none';
         }
 
         function deleteEvent() {
-            const eventId = parseInt(document.getElementById('eventId').value);
-            events.splice(eventId, 1);
-            localStorage.setItem('events', JSON.stringify(events));
-            closeEventForm();
-            generateCalendar();
+            const eventId = document.getElementById('eventId').value;
+            if (eventId !== '') {
+                events.splice(parseInt(eventId), 1);
+                localStorage.setItem('events', JSON.stringify(events));
+                closeEventForm();
+                generateCalendar();
+                const date = document.getElementById('eventDate').value;
+                updateDailyEventsList(date);
+            }
         }
 
         function openJournal(date) {
@@ -377,13 +641,31 @@
             const journalDate = document.getElementById('journalDate');
             const journalText = document.getElementById('journalText');
             
-            // Create a new Date object from the date string and adjust for timezone
             const displayDate = new Date(date + 'T00:00:00');
             journalDate.textContent = displayDate.toLocaleDateString();
             journalText.value = journalEntries[date] || '';
             journalForm.dataset.date = date;
             journalForm.style.display = 'block';
+            
+            updateDailyEventsList(date);
             renderTasks();
+        }
+
+        function updateDailyEventsList(date) {
+            const dailyEventsList = document.getElementById('dailyEventsList');
+            dailyEventsList.innerHTML = '';
+            
+            const dayEvents = events.filter(event => event.date === date);
+            dayEvents.sort((a, b) => a.startTime.localeCompare(b.startTime));
+            
+            dayEvents.forEach((event, index) => {
+                const eventDiv = document.createElement('div');
+                eventDiv.className = 'event';
+                eventDiv.style.backgroundColor = event.color;
+                eventDiv.textContent = `${formatTime(event.startTime)}-${formatTime(event.endTime)} ${event.description}`;
+                eventDiv.onclick = () => editEvent(event, events.indexOf(event));
+                dailyEventsList.appendChild(eventDiv);
+            });
         }
 
         function saveJournal() {
@@ -407,6 +689,11 @@
             const description = document.getElementById('eventDescription').value;
             const eventId = document.getElementById('eventId').value;
             
+            if (!description || !startTime || !endTime) {
+                alert('Please fill in all fields');
+                return;
+            }
+
             if (endTime <= startTime) {
                 alert('End time must be after start time');
                 return;
@@ -421,16 +708,15 @@
             };
             
             if (eventId !== '') {
-                // Edit existing event
                 events[parseInt(eventId)] = eventData;
             } else {
-                // Add new event
                 events.push(eventData);
             }
             
             localStorage.setItem('events', JSON.stringify(events));
             closeEventForm();
             generateCalendar();
+            updateDailyEventsList(date);
         }
 
         function closeEventForm() {
@@ -442,7 +728,6 @@
             const grid = document.querySelector('.calendar-grid');
             const monthYear = document.querySelector('.current-month');
             
-            // Clear existing calendar cells except headers
             const headers = document.querySelectorAll('.day-header');
             grid.innerHTML = '';
             headers.forEach(header => grid.appendChild(header.cloneNode(true)));
@@ -450,16 +735,13 @@
             const year = currentDate.getFullYear();
             const month = currentDate.getMonth();
             
-            // Update month/year display
             const monthNames = ["January", "February", "March", "April", "May", "June",
                               "July", "August", "September", "October", "November", "December"];
             monthYear.textContent = `${monthNames[month]} ${year}`;
 
-            // Get first day of month and total days
             const firstDay = new Date(year, month, 1);
             const lastDay = new Date(year, month + 1, 0);
             
-            // Add cells for previous month
             const firstDayIndex = firstDay.getDay();
             for (let i = firstDayIndex; i > 0; i--) {
                 const prevDate = new Date(year, month, -i + 1);
@@ -467,14 +749,12 @@
                 grid.appendChild(cell);
             }
 
-            // Add cells for current month
             for (let day = 1; day <= lastDay.getDate(); day++) {
                 const date = new Date(year, month, day);
                 const cell = createCalendarCell(date, false);
                 grid.appendChild(cell);
             }
 
-            // Add cells for next month
             const remainingCells = 42 - (firstDayIndex + lastDay.getDate());
             for (let i = 1; i <= remainingCells; i++) {
                 const nextDate = new Date(year, month + 1, i);
@@ -494,45 +774,24 @@
 
             const dateStr = date.toISOString().split('T')[0];
             
-            // Add press and hold event for journal
-            cell.addEventListener('mousedown', () => {
-                pressTimer = setTimeout(() => {
-                    openJournal(dateStr);
-                }, 500); // Open journal after 500ms press
+            cell.addEventListener('click', () => {
+                openJournal(dateStr);
             });
 
-            cell.addEventListener('mouseup', () => {
-                clearTimeout(pressTimer);
-            });
-
-            cell.addEventListener('mouseleave', () => {
-                clearTimeout(pressTimer);
-            });
-
-            // Single click for adding event
-            cell.addEventListener('click', (e) => {
-                // Only trigger click if it wasn't a long press
-                if (e.detail === 1) {
-                    addEvent(dateStr);
-                }
-            });
-
-            // Add existing events
             events.forEach((event, index) => {
                 if (event.date === dateStr) {
                     const eventDiv = document.createElement('div');
                     eventDiv.className = 'event';
                     eventDiv.style.backgroundColor = event.color;
-                    eventDiv.textContent = `${event.startTime}-${event.endTime} ${event.description}`;
+                    eventDiv.textContent = event.description;  // Removed time display
                     eventDiv.onclick = (e) => {
-                        e.stopPropagation(); // Prevent cell click
+                        e.stopPropagation();
                         editEvent(event, index);
                     };
                     cell.appendChild(eventDiv);
                 }
             });
 
-            // Add journal indicator if entry exists
             if (journalEntries[dateStr]) {
                 const journalIndicator = document.createElement('div');
                 journalIndicator.className = 'event';
@@ -547,7 +806,8 @@
         function loadSavedData() {
             const savedEvents = localStorage.getItem('events');
             const savedJournalEntries = localStorage.getItem('journalEntries');
-            const savedTasks = localStorage.getItem('tasks');
+            const savedPersonalTasks = localStorage.getItem('personalTasks');
+            const savedWorkTasks = localStorage.getItem('workTasks');
             
             if (savedEvents) {
                 events = JSON.parse(savedEvents);
@@ -557,15 +817,17 @@
                 journalEntries = JSON.parse(savedJournalEntries);
             }
 
-            if (savedTasks) {
-                tasks = JSON.parse(savedTasks);
+            if (savedPersonalTasks) {
+                personalTasks = JSON.parse(savedPersonalTasks);
+            }
+
+            if (savedWorkTasks) {
+                workTasks = JSON.parse(savedWorkTasks);
             }
         }
 
-        // Initialize calendar and load saved data
         loadSavedData();
         generateCalendar();
     </script>
 </body>
 </html>
-
